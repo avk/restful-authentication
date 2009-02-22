@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../helper'
+# require File.dirname(__FILE__) + '/../helper'
 
 RE_<%= file_name.capitalize %>      = %r{(?:(?:the )? *(\w+) *)}
 RE_<%= file_name.capitalize %>_TYPE = %r{(?: *(\w+)? *)}
