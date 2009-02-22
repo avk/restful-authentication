@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 ENV["RAILS_ENV"] = "test"
 require File.expand_path(File.dirname(__FILE__) + "/../config/environment")
-require 'spec/rails/story_adapter'
 require 'spec/story'
+require 'spec/rails/story_adapter'
 require File.expand_path(File.dirname(__FILE__) + "/rest_auth_stories_helper.rb")
 
 # Make visible for testing
