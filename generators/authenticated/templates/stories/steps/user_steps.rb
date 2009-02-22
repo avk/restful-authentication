@@ -30,7 +30,7 @@ steps_for(:<%= file_name %>) do
   end
   
   Given "there is no $<%= file_name %>_type <%= file_name %> named '$login'" do |_, login|
-    @<%= file_name %> = <%= class_name %>.find_by_login(login)
+    @<%= file_name %> = <%= class_name %>.find_by_<%= login_field %>(login)
     @<%= file_name %>.destroy! if @<%= file_name %>
     @<%= file_name %>.should be_nil
   end
@@ -75,16 +75,22 @@ steps_for(:<%= file_name %>) do
   Then "$login should be logged in" do |login|
     controller.logged_in?.should be_true
     controller.current_<%= file_name %>.should === @<%= file_name %>
-    controller.current_<%= file_name %>.login.should == login
+    controller.current_<%= file_name %>.<%= login_field %>.should == login
   end
     
 end
 
 def named_<%= file_name %> login
   <%= file_name %>_params = {
+<% if options[:email_as_login] -%>
+    'admin@example.com'   => {'id' => 1, 'password' => '1234addie', 'email' => 'admin@example.com',       },
+    'unactivated@example.com'    => {           'password' => '1234oona',  'email' => 'unactivated@example.com'},
+    'registered@example.com'  => {           'password' => 'monkey',    'email' => 'registered@example.com' },
+<% else -%>
     'admin'   => {'id' => 1, 'login' => 'addie', 'password' => '1234addie', 'email' => 'admin@example.com',       },
     'oona'    => {          'login' => 'oona',   'password' => '1234oona',  'email' => 'unactivated@example.com'},
     'reggie'  => {          'login' => 'reggie', 'password' => 'monkey',    'email' => 'registered@example.com' },
+<% end -%>
     }
   <%= file_name %>_params[login.downcase]
 end
@@ -111,7 +117,7 @@ end
 def create_<%= file_name %>(<%= file_name %>_params={})
   @<%= file_name %>_params       ||= <%= file_name %>_params
   post "/<%= model_controller_file_path %>", :<%= file_name %> => <%= file_name %>_params
-  @<%= file_name %> = <%= class_name %>.find_by_login(<%= file_name %>_params['login'])
+  @<%= file_name %> = <%= class_name %>.find_by_<%= login_field %>(<%= file_name %>_params['<%= login_field %>'])
 end
 
 def create_<%= file_name %>!(<%= file_name %>_type, <%= file_name %>_params)
@@ -141,7 +147,11 @@ def log_in_<%= file_name %> <%= file_name %>_params=nil
   @<%= file_name %>_params ||= <%= file_name %>_params
   <%= file_name %>_params  ||= @<%= file_name %>_params
   post "/<%= controller_routing_path %>", <%= file_name %>_params
+<% if options[:email_as_login] -%>
+  @<%= file_name %> = <%= class_name %>.find_by_email(<%= file_name %>_params['email'])
+<% else -%>
   @<%= file_name %> = <%= class_name %>.find_by_login(<%= file_name %>_params['login'])
+<% end -%>
   controller.current_<%= file_name %>
 end
 

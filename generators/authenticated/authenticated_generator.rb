@@ -4,7 +4,8 @@ class AuthenticatedGenerator < Rails::Generator::NamedBase
   default_options :skip_migration => false,
                   :skip_routes    => false,
                   :old_passwords  => false,
-                  :include_activation => false
+                  :include_activation => false, 
+                  :email_as_login => false
 
   attr_reader   :controller_name,
                 :controller_class_path,
@@ -17,7 +18,8 @@ class AuthenticatedGenerator < Rails::Generator::NamedBase
                 :controller_routing_name,                 # new_session_path
                 :controller_routing_path,                 # /session/new
                 :controller_controller_name,              # sessions
-                :controller_file_name
+                :controller_file_name,
+                :login_field
   alias_method  :controller_table_name, :controller_plural_name
   attr_reader   :model_controller_name,
                 :model_controller_class_path,
@@ -37,6 +39,7 @@ class AuthenticatedGenerator < Rails::Generator::NamedBase
     super
 
     @rspec = has_rspec?
+    @login_field = (options[:email_as_login]) ? 'email' : 'login'
 
     @controller_name = (args.shift || 'sessions').pluralize
     @model_controller_name = @name.pluralize
@@ -374,6 +377,7 @@ class AuthenticatedGenerator < Rails::Generator::NamedBase
   def site_keys_file
     File.join("config", "initializers", "site_keys.rb")
   end
+  
 
 protected
   # Override with your own usage banner.
@@ -402,6 +406,8 @@ protected
       "Use the older password encryption scheme (see README)")    { |v| options[:old_passwords] = v }
     opt.on("--dump-generator-attrs",
       "(generator debug helper)")                                 { |v| options[:dump_generator_attribute_names] = v }
+    opt.on("--email-as-login",
+      "Use user.email for logging in instead of user.login")      { |v| options[:email_as_login] = v }
   end
 
   def dump_generator_attribute_names
