@@ -15,8 +15,16 @@ class <%= class_name %> < ActiveRecord::Base
   validates_format_of       :login,    :with => Authentication.login_regex, :message => Authentication.bad_login_message
 <% end -%>
 
+<% if options[:first_and_last_name] -%>
+  validates_format_of       :first_name,     :with => Authentication.name_regex,  :message => Authentication.bad_name_message, :allow_nil => true
+  validates_length_of       :first_name,     :maximum => 40
+  
+  validates_format_of       :last_name,     :with => Authentication.name_regex,  :message => Authentication.bad_name_message, :allow_nil => true
+  validates_length_of       :last_name,     :maximum => 60
+<% else -%>
   validates_format_of       :name,     :with => Authentication.name_regex,  :message => Authentication.bad_name_message, :allow_nil => true
   validates_length_of       :name,     :maximum => 100
+<% end -%>
 
   validates_presence_of     :email
   validates_length_of       :email,    :within => 6..100 #r@a.wk
@@ -28,7 +36,7 @@ class <%= class_name %> < ActiveRecord::Base
   # HACK HACK HACK -- how to do attr_accessible from here?
   # prevents a user from submitting a crafted form that bypasses activation
   # anything else you want your user to change should be added here.
-  attr_accessible <%= (options[:email_as_login]) ? '' : ':login,' %> :email, :name, :password, :password_confirmation
+  attr_accessible <%= (options[:email_as_login]) ? '' : ':login,' %> :email, <%= (options[:first_and_last_name]) ? ':first_name, :last_name' : ':name' -%>, :password, :password_confirmation
 
 <% if options[:include_activation] && !options[:stateful] %>
   # Activates the user in the database.
@@ -72,6 +80,12 @@ class <%= class_name %> < ActiveRecord::Base
   def email=(value)
     write_attribute :email, (value ? value.downcase : nil)
   end
+
+<% if options[:first_and_last_name] -%>
+  def name
+    first_name + ' ' + last_name
+  end
+<% end -%>
 
   protected
     

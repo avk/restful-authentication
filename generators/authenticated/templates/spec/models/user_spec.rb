@@ -120,6 +120,34 @@ describe <%= class_name %> do
     end
   end
 
+<% if options[:first_and_last_name] -%>
+  describe 'allows legitimate first and last names:' do
+    [['Andre The Giant (7\'4", 520 lb.) --', 'Andre The Giant (7\'4", 520 lb.) -- has a posse'], ['', ''], 
+     ['1234567890_234567890_234567890_23456789', '_234567890_234567890_234567890_234567890_234567890_23456789'],
+    ].each do |name_arr|
+      it "'#{name_arr}'" do
+        lambda do
+          u = create_<%= file_name %>(:first_name => name_arr[0], :last_name => name_arr[1])
+          u.errors.on(:first_name).should     be_nil
+          u.errors.on(:last_name).should     be_nil
+        end.should change(<%= class_name %>, :count).by(1)
+      end
+    end
+  end
+  describe "disallows illegitimate first and last names" do
+    [["tab\t", "tab\t"], ["newline\n", "newline\n"],
+     ['1234567890_234567890_234567890_234567890_', '_234567890_234567890_234567890_234567890_234567890_234567890_'],
+     ].each do |name_arr|
+      it "'#{name_arr}'" do
+        lambda do
+          u = create_<%= file_name %>(:first_name => name_arr[0], :last_name => name_arr[1])
+          u.errors.on(:first_name).should_not be_nil
+          u.errors.on(:last_name).should_not be_nil
+        end.should_not change(<%= class_name %>, :count)
+      end
+    end
+  end
+<% else -%>
   describe 'allows legitimate names:' do
     ['Andre The Giant (7\'4", 520 lb.) -- has a posse',
      '', '1234567890_234567890_234567890_234567890_234567890_234567890_234567890_234567890_234567890_234567890',
@@ -144,6 +172,7 @@ describe <%= class_name %> do
       end
     end
   end
+<% end -%>
 
   it 'resets password' do
     <%= table_name %>(:quentin).update_attributes(:password => 'new password', :password_confirmation => 'new password')

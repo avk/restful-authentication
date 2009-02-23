@@ -20,8 +20,7 @@ class AuthenticatedGenerator < Rails::Generator::NamedBase
                 :controller_routing_path,                 # /session/new
                 :controller_controller_name,              # sessions
                 :controller_file_name,
-                :login_field,
-                :name_field
+                :login_field
   alias_method  :controller_table_name, :controller_plural_name
   attr_reader   :model_controller_name,
                 :model_controller_class_path,
@@ -42,7 +41,6 @@ class AuthenticatedGenerator < Rails::Generator::NamedBase
 
     @rspec = has_rspec?
     @login_field = (options[:email_as_login]) ? 'email' : 'login'
-    @name_field = (options[:first_and_last_name]) ? 'full_name' : 'name'
 
     @controller_name = (args.shift || 'sessions').pluralize
     @model_controller_name = @name.pluralize

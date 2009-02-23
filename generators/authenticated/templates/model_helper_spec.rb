@@ -5,7 +5,12 @@ include <%= model_controller_class_name %>Helper
 describe "<%= model_controller_class_name %>Helper.link_to_<%= file_name %>" do
   before do
     @<%= file_name %> = <%= class_name %>.new({
+<% if options[:first_and_last_name] -%>
+        :first_name => '<%= class_name %>',
+        :last_name => 'Name',
+<% else -%>
         :name  => '<%= class_name %> Name',
+<% end -%>
 <% if options[:email_as_login] -%>
         :email => '<%= file_name %>_name@<%= file_name %>_domain.com',
 <% else -%>

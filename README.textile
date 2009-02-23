@@ -124,7 +124,8 @@ To use the generator:
     --skip-migration \
     --skip-routes \
     --old-passwords \
-    --email-as-login
+    --email-as-login \
+    --first-and-last-name
 
 * The first parameter specifies the model that gets created in signup (typically
   a user or account model).  A model with migration is created, as well as a
@@ -161,6 +162,8 @@ To use the generator:
 * --skip-routes: Don't generate a resource line in @config/routes.rb@
 
 * --email-as-login: Use user.email for logging in instead of user.login
+
+* --first-and-last-name: Use first_name and last_name instead of a name column
 
 ***************************************************************************
 <a id="POST-INSTALL"/> </a>

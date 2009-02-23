@@ -4,7 +4,12 @@ class <%= migration_name %> < ActiveRecord::Migration
 <% unless options[:email_as_login] -%>
       t.column :login,                     :string, :limit => 40
 <% end -%>
+<% if options[:first_and_last_name] -%>
+      t.column :first_name,                :string, :limit => 40, :default => '', :null => true
+      t.column :last_name,                 :string, :limit => 60, :default => '', :null => true
+<% else -%>
       t.column :name,                      :string, :limit => 100, :default => '', :null => true
+<% end -%>
       t.column :email,                     :string, :limit => 100
       t.column :crypted_password,          :string, :limit => 40
       t.column :salt,                      :string, :limit => 40
